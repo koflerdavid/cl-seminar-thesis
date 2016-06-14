@@ -1,0 +1,54 @@
+\section{Equivalence of nondeterministic finite automata}
+
+\subsection{Finite automata}
+
+A Nondeterministic Finite Automaton $N = \langle Q_N, \Sigma_N, F_N, \delta_N \rangle$ consists of five parts:
+
+\begin{itemize}
+  \item a \textit{finite} set of states $Q_N$,
+  \item a \textit{finite} set of symbols $\Sigma_N$, called the input alphabet,
+  \item a set of accepting states $F_N$, which has to be a subset of $Q_N$, and
+  \item a transition function $\delta_N : (Q_N, \Sigma_N) \to \mathcal{P}(Q_N)$ mapping a state and an input symbol
+          to a set of successor states.
+\end{itemize}
+
+The purpose of an automaton is to accept or to reject a word
+composed of symbols from the input alphabet.
+A finite automaton does this by starting out from one of the
+states and then using every symbol of the input word (in the given
+order) and the mapping $\delta_N$ to reach a successor state.
+In general there can be more than one (or no) ways to proceed since $\delta_N$ returns a set of possible successor states.
+Formally, this is what the function $\hat{\delta}_N$ does:
+
+\begin{definition}
+  \begin{align*}
+    \hat{\delta}_N(p, \epsilon) &= \{p\}\\
+    \hat{\delta}_N(p, aw) &= \bigcup_{q \in \delta_N(p, a)}\hat{\delta}_N(q, w)
+  \end{align*}
+\end{definition}
+
+A finite automata accepts an input word if it is possible to reach one of the
+accepting states by using all of the word's characters. The set of words which
+an automaton accepts is called its language:
+
+\begin{definition}
+  $\mathcal{L}(N) = \{ w \forWhich \exists q \in Q_N: \hat{\delta}_N(q, w) \cap F_N \neq \emptyset \}$
+\end{definition}
+
+For the purposes of this paper it is interesting to start from an arbitrary set of states of the automaton.
+
+\begin{definition}
+  $\mathcal{L}_N(P) = \{ w \forWhich \exists p \in P: \hat{\delta}_N(p, w) \cap F_N \neq \emptyset\}$
+\end{definition}
+
+A Deterministic Finite Automaton $D$ is special in that $\delta_M$ assigns to
+every state and input symbol exactly one successor state. Every
+nondeterministic automata $N$ can be converted into the definite automaton
+$N^\# = \langle \mathcal{P}(Q_N), \Sigma_N, F_N^\#, \delta_N^\# \rangle$:
+
+\begin{definition}
+  \begin{align*}
+    F_N^\# &= \{ S \in \mathcal{P}(Q) \forWhich S \cap F \neq \emptyset \}\\
+    \delta_N^\#(P, a) &= \bigcup_{p \in P} \delta_N(p, a)
+  \end{align*}
+\end{definition}

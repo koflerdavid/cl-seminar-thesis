@@ -36,6 +36,11 @@
 \RequirePackage{geometry}
 \RequirePackage{microtype}
 \RequirePackage{iflang}
+\RequirePackage[
+ backend=biber,
+ style=trad-abbrv,
+]{biblatex}
+\bibliography{biblio}
 \RequirePackage[%
  bookmarks,%
  plainpages=false,%
@@ -103,8 +108,9 @@
 \renewcommand\appendix{%
 \backmatter
 \phantomsection{\addcontentsline{toc}{section}{\bibname}}
- \bibliographystyle{abbrv}
- \bibliography{\@bibfile}
+ \printbibliography
+ %\bibliographystyle{abbrv}
+ %\bibliography{\@bibfile}
  \@OLDappendix
 }
 \theoremstyle{plain}

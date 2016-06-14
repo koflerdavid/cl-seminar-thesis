@@ -3,8 +3,9 @@ OUTPUT_FILE_NAME="Efficiently Checking Equivalence of Nondeterministic Finite Au
 
 all: $(MAIN_FILE).bbl $(MAIN_FILE).aux
 	pdflatex $(MAIN_FILE).tex
+	mv $(MAIN_FILE).pdf $(OUTPUT_FILE_NAME)
 
-fast: *.tex chapters.tex
+fast: *.tex sections/*.tex
 	pdflatex $(MAIN_FILE).tex
 
 $(MAIN_FILE).aux: $(MAIN_FILE).tex

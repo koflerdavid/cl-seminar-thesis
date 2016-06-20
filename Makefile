@@ -7,6 +7,7 @@ all: $(MAIN_FILE).bbl $(MAIN_FILE).aux
 
 fast: *.tex sections/*.tex
 	pdflatex $(MAIN_FILE).tex
+	mv $(MAIN_FILE).pdf $(OUTPUT_FILE_NAME)
 
 $(MAIN_FILE).aux: $(MAIN_FILE).tex
 	pdflatex $(MAIN_FILE).tex

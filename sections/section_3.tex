@@ -1,3 +1,133 @@
 \section{Bonchi and Pous' coinductive approach}
 
-Bonchi and Pous analyzed 
+The main contribution of Bonchi and Pous is their presentation of existing
+algorithms using coinductive frameworks. This makes it possible to use a more
+precise performance metric, that is, the number of pairs they have to check.
+
+Bonchi and Pous use a proof method originating in concurrency theory called
+``bisimulation''. Most of the following theory originates from earlier work of
+Milner\cite{milner1989communication} and Sangiorgi\cite{sangiorgi1998bisimulation}.
+
+\subsection{Coinduction and Bisimulations}
+
+Coinductive frameworks originate from concurrency theory and allow reasoning
+about structures of which only their behaviour is known. The best-known
+coinductive proof principle is bisimulation.
+
+Bisimulations are relations on states of an automaton (or a similar transition
+system, such as actors). They are special in that they are
+congruent with the transition function of the automaton, i.e., if two states are
+related, then their successors also have to be related.
+It is defined as follows:
+
+\begin{definition}
+  A bisimulation $R_N$ is the largest binary relation on the set of states of
+  the automaton $N$ satisfying the following properties:
+  \begin{align*}
+    (p, q) \in R_N \iff &(p \in F_N \iff q \in F_N)\\
+      &\land \forall a \in \Sigma_N: \delta_N(p, a) \setAsRelation{R} \delta_N(q, a)
+  \end{align*}
+
+  The notation $p \sim q$ is used to express that there exists a bisimulation
+  which relates {$p$ and $q$}.
+\end{definition}
+
+\begin{definition}
+  \begin{align*}
+    (p, q) \in R_N \iff &(p \in F_N \iff q \in F_N)\\
+      &\land \forall a \in \Sigma_N: \delta_N(p, a) \setAsRelation{R} \delta_N(q, a)
+  \end{align*}
+\end{definition}
+
+It is easy to see that any bisimulation progresses to itself.
+
+\begin{definition}
+  Two states of an automaton have the same language if there is a bisimulation relating them. \\
+  $\mathcal{L}_N(p) = \mathcal{L}_N(q) \iff p \sim q$
+\end{definition}
+
+\subsection{Computing bisimulations}
+
+Bisimulations on states of a deterministic automaton can be computed using the following algorithm.
+To use it to compare two distinct automata, the automata have to be merged.
+It is necessary to ensure that their alphabets are the same (easily satisfied by
+using the union of the two alphabets), that their state sets are disjunct
+(by renaming), and that each of the input automata has only one starting state.
+
+\input{sections/algorithm}
+
+The algorithm first computes a bisimulation. If it succeeds then the languages are
+equal. If it fails to do so, the languages are not equal.
+Finding a bisimulation, and therefore proving the language equivalence, yields
+the worst-case runtime of the algorithm.
+
+The algorithm can be extended to also find a witness for the inequality of the
+input states. This can be done by tagging each pair in \textit{todo} with the
+symbol sequence which yielded it. This results in the following algorithm,
+which yields either \textbf{true} or a word $w$ for which
+$\neg (\hat{\delta}(p, w) \in F \iff \hat{\delta}(q, w) \in F)$.
+
+\input{sections/algorithm_with_witness}
+
+\subsection{Bisimulations up-to}
+
+Since in the worst case there are $\mathcal{O}(n^2)$ pairs of states of the
+input automaton, it is advantageous to think about how to reduce the number of
+pairs we have to compute.
+
+\begin{definition}
+A relation R is a bisimulation up-to $f$
+($f : \mathcal{P}(Q \times Q) \to \mathcal{P}(Q \times Q$)) iff $R \rightarrowtail f(R)$.
+\end{definition}
+
+Sangiorgi introduced the notion of \textit{respectful} functions to describe
+function which yield bisimulations up-to.
+In an earlier work of Pous he introduced compatibility as a generalisation of
+Sangiorgi's respectfulness\cite{pous2007complete}, but in the context of Bonchi and Pous's paper they
+are equivalent. Nevertheless, Bonchi and Pous are using this name in their work.
+
+\begin{definition}
+  A function $f : \mathcal{P}(Q \times Q) \to \mathcal{P}(Q \times Q)$ is compatible if it is
+  \begin{itemize}
+    \item monotone ($\forall R, R' \subseteq Q \times Q: R \subseteq R' \Rightarrow f(R) \subseteq f(R')$), and
+    \item preserves progression:
+        $\forall R, R' \subseteq Q \times Q: R \rightarrowtail R' \Rightarrow f(R) \rightarrowtail f(R')$.
+  \end{itemize}
+\end{definition}
+
+A bisimulation $R$ up-to $f$ is a relation where $f(R)$ is a bisimulation.
+The function $f$ has to be \textit{compatible}. Bonchi and Pous proved that
+any bisimulation up-to is contained in a bisimulation. This is what their
+work is about: making it possible to more easily compute bisimulations.
+
+A main contribution of Bonchi and Pous is also to show that many nontrivial functions
+are compatible. The most important of them are
+
+\begin{itemize}
+  \item the identity function
+  \item pointwise union of a family of compatible functions: \\
+          $\bigcup F(R) = \bigcup_{f \in F} f(R)$
+  \item $f \circ g$ where $f$ and $g$ are compatible function
+  \item the identity closure of $R \subseteq \mathcal{P}(Q \times Q): R \cup \{(q, q)\forWhich q \in Q\}$
+  \item the symmetric closure of a relation: $s(R) = R \cup \{(q, p) \forWhich p \setAsRelation{R} q\}$
+  \item squaring of a relation $R$: $P \setAsRelation{R} P' \land P' \setAsRelation{R} P'' \Rightarrow P \setAsRelation{R} P''$
+  \item infinite iteration of a compatible function: $f^\omega(R) = \bigcup_{n = 1}^{\infty} f^n(R)$
+  \item by the above four points, the equivalence closure
+\end{itemize}
+
+\subsection{Examples}
+
+Hopcroft and Karp's algorithm for determining the equivalence of DFAs is
+equivalent to computing a bisimulation up to equivalence, that is, exploiting
+symmetry and transitivity.
+
+Bonchi and Pous exploit the following property of the states of determinised NFAs:
+
+\begin{corollary}
+  Computing the language of a determinised NFA is a homomorphism:\\
+  $\mathcal{L}(P_1) = \mathcal{L}(Q_1) \land \mathcal{L}(P_2) = \mathcal{L}(Q_2)
+    \Rightarrow \mathcal{L}(P_1 \cup P_2) = \mathcal{L}(Q_1 \cup Q_2)$
+\end{corollary}
+
+After proving that this function is compatible a
+\textit{bisimulation up to congruence} can be computed for determinised NFAs.

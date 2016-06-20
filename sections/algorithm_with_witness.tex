@@ -1,0 +1,13 @@
+\begin{definition}
+  \begin{align*}
+    \underline{\mathit{NaiveWithWitness(p, q)}}: &\quad Q \to Q \to \{\mathbf{true}, \mathbf{\Sigma^\ast}\} \\
+    \text{(1) } & R := \emptyset, \mathit{todo} := \{(p, q)_\epsilon\} \\
+    \text{(2) } & \text{while } \mathit{todo} \neq \emptyset \text{ do}\\
+      & \text{(2.1)}\quad \mathit{todo} := \mathit{todo} \setminus \{(p', q')_w\}\\
+      & \text{(2.2)}\quad \text{if } (p', q') \in \text{ R} \text{ then goto (2)}\\
+      & \text{(2.3)}\quad \text{if } p' \in F \nLeftrightarrow q' \in F \text{ then return } w\\
+      & \text{(2.4)}\quad \mathit{todo} := \mathit{todo} \cup \bigcup_{a \in \Sigma}{(\delta(p', a), \delta(q', a))_{wa}}\\
+      & \text{(2.5)}\quad R := R \cup \{(p', q')\} \\
+    \text{(3) } & \text{return } \mathbf{true}\\
+  \end{align*}
+\end{definition}

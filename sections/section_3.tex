@@ -1,133 +1,111 @@
-\section{Bonchi and Pous' coinductive approach}
+\section{Finite automata}
 
-The main contribution of Bonchi and Pous is their presentation of existing
-algorithms using coinductive frameworks. This makes it possible to use a more
-precise performance metric, that is, the number of pairs they have to check.
+This section serves to review the theory of finite automata, to define the
+problem of checking equivalence, and to highlight its challenges.
 
-Bonchi and Pous use a proof method originating in concurrency theory called
-``bisimulation''. Most of the following theory originates from earlier work of
-Milner\cite{milner1989communication} and Sangiorgi\cite{sangiorgi1998bisimulation}.
-
-\subsection{Coinduction and Bisimulations}
-
-Coinductive frameworks originate from concurrency theory and allow reasoning
-about structures of which only their behaviour is known. The best-known
-coinductive proof principle is bisimulation.
-
-Bisimulations are relations on states of an automaton (or a similar transition
-system, such as actors). They are special in that they are
-congruent with the transition function of the automaton, i.e., if two states are
-related, then their successors also have to be related.
-It is defined as follows:
+\subsection{Nondeterministic finite automata}
 
 \begin{definition}
-  A bisimulation $R_N$ is the largest binary relation on the set of states of
-  the automaton $N$ satisfying the following properties:
-  \begin{align*}
-    (p, q) \in R_N \iff &(p \in F_N \iff q \in F_N)\\
-      &\land \forall a \in \Sigma_N: \delta_N(p, a) \setAsRelation{R} \delta_N(q, a)
-  \end{align*}
+  A \emph{Nondeterministic Finite Automaton} (NFA) $N = \langle Q_N, \Sigma_N, S_N, F_N, \delta_N \rangle$ consists of five parts:
 
-  The notation $p \sim q$ is used to express that there exists a bisimulation
-  which relates {$p$ and $q$}.
-\end{definition}
-
-\begin{definition}
-  \begin{align*}
-    (p, q) \in R_N \iff &(p \in F_N \iff q \in F_N)\\
-      &\land \forall a \in \Sigma_N: \delta_N(p, a) \setAsRelation{R} \delta_N(q, a)
-  \end{align*}
-\end{definition}
-
-It is easy to see that any bisimulation progresses to itself.
-
-\begin{definition}
-  Two states of an automaton have the same language if there is a bisimulation relating them. \\
-  $\mathcal{L}_N(p) = \mathcal{L}_N(q) \iff p \sim q$
-\end{definition}
-
-\subsection{Computing bisimulations}
-
-Bisimulations on states of a deterministic automaton can be computed using the following algorithm.
-To use it to compare two distinct automata, the automata have to be merged.
-It is necessary to ensure that their alphabets are the same (easily satisfied by
-using the union of the two alphabets), that their state sets are disjunct
-(by renaming), and that each of the input automata has only one starting state.
-
-\input{sections/algorithm}
-
-The algorithm first computes a bisimulation. If it succeeds then the languages are
-equal. If it fails to do so, the languages are not equal.
-Finding a bisimulation, and therefore proving the language equivalence, yields
-the worst-case runtime of the algorithm.
-
-The algorithm can be extended to also find a witness for the inequality of the
-input states. This can be done by tagging each pair in \textit{todo} with the
-symbol sequence which yielded it. This results in the following algorithm,
-which yields either \textbf{true} or a word $w$ for which
-$\neg (\hat{\delta}(p, w) \in F \iff \hat{\delta}(q, w) \in F)$.
-
-\input{sections/algorithm_with_witness}
-
-\subsection{Bisimulations up-to}
-
-Since in the worst case there are $\mathcal{O}(n^2)$ pairs of states of the
-input automaton, it is advantageous to think about how to reduce the number of
-pairs we have to compute.
-
-\begin{definition}
-A relation R is a bisimulation up-to $f$
-($f : \mathcal{P}(Q \times Q) \to \mathcal{P}(Q \times Q$)) iff $R \rightarrowtail f(R)$.
-\end{definition}
-
-Sangiorgi introduced the notion of \textit{respectful} functions to describe
-function which yield bisimulations up-to.
-In an earlier work of Pous he introduced compatibility as a generalisation of
-Sangiorgi's respectfulness\cite{pous2007complete}, but in the context of Bonchi and Pous's paper they
-are equivalent. Nevertheless, Bonchi and Pous are using this name in their work.
-
-\begin{definition}
-  A function $f : \mathcal{P}(Q \times Q) \to \mathcal{P}(Q \times Q)$ is compatible if it is
   \begin{itemize}
-    \item monotone ($\forall R, R' \subseteq Q \times Q: R \subseteq R' \Rightarrow f(R) \subseteq f(R')$), and
-    \item preserves progression:
-        $\forall R, R' \subseteq Q \times Q: R \rightarrowtail R' \Rightarrow f(R) \rightarrowtail f(R')$.
+    \item a finite set of states $Q_N$,
+    \item a finite set of symbols $\Sigma_N$, called the input alphabet,
+    \item a set of starting states $S_N \subseteq Q_N$,
+    \item a set of accepting states $F_N \subseteq Q_N$, and
+    \item a transition function $\delta_N : (Q_N \times \Sigma_N) \to \mathcal{P}(Q_N)$ mapping a state and an input symbol
+            to a set of successor states.
   \end{itemize}
 \end{definition}
 
-A bisimulation $R$ up-to $f$ is a relation where $f(R)$ is a bisimulation.
-The function $f$ has to be \textit{compatible}. Bonchi and Pous proved that
-any bisimulation up-to is contained in a bisimulation. This is what their
-work is about: making it possible to more easily compute bisimulations.
+The purpose of an automaton is to accept or to reject a word
+composed of symbols from the input alphabet.
+A finite automaton does this by starting out from one of the
+states and then using every symbol of the input word (in the given
+order) and the mapping $\delta_N$ to reach a successor state.
+In general there can be more than one (or no) ways to proceed since $\delta_N$ returns a set of possible successor states.
+Formally, this is what the function $\hat{\delta}_N$ does:
 
-A main contribution of Bonchi and Pous is also to show that many nontrivial functions
-are compatible. The most important of them are
+\begin{definition}
+  \begin{align*}
+    \hat{\delta}_N(p, \epsilon) &= \{p\}\\
+    \hat{\delta}_N(p, aw) &= \bigcup_{q \in \delta_N(p, a)}\hat{\delta}_N(q, w)
+  \end{align*}
+\end{definition}
 
-\begin{itemize}
-  \item the identity function
-  \item pointwise union of a family of compatible functions: \\
-          $\bigcup F(R) = \bigcup_{f \in F} f(R)$
-  \item $f \circ g$ where $f$ and $g$ are compatible function
-  \item the identity closure of $R \subseteq \mathcal{P}(Q \times Q): R \cup \{(q, q)\forWhich q \in Q\}$
-  \item the symmetric closure of a relation: $s(R) = R \cup \{(q, p) \forWhich p \setAsRelation{R} q\}$
-  \item squaring of a relation $R$: $P \setAsRelation{R} P' \land P' \setAsRelation{R} P'' \Rightarrow P \setAsRelation{R} P''$
-  \item infinite iteration of a compatible function: $f^\omega(R) = \bigcup_{n = 1}^{\infty} f^n(R)$
-  \item by the above four points, the equivalence closure
-\end{itemize}
+A finite automata accepts an input word if it is possible to reach one of the
+accepting states by using all of the word's characters.
+The set of words which an automaton accepts is called its language:
 
-\subsection{Examples}
+\begin{definition}
+  $\mathcal{L}(N) = \{ w \forWhich \exists s \in S_N: \hat{\delta}_N(s, w) \cap F_N \neq \emptyset \}$
+\end{definition}
 
-Hopcroft and Karp's algorithm for determining the equivalence of DFAs is
-equivalent to computing a bisimulation up to equivalence, that is, exploiting
-symmetry and transitivity.
+For the purpose of this thesis it is interesting to start from an arbitrary set of states of the automaton.
 
-Bonchi and Pous exploit the following property of the states of determinised NFAs:
+\begin{definition}
+  \begin{align*}
+    \mathcal{L}_N(P) &= \{ w \forWhich \exists p \in P: \hat{\delta}_N(p, w) \cap F_N \neq \emptyset\}\\
+    \mathcal{L}(N) &= \mathcal{L}_N(S_N)
+  \end{align*}
+\end{definition}
 
-\begin{corollary}
-  Computing the language of a determinised NFA is a homomorphism:\\
-  $\mathcal{L}(P_1) = \mathcal{L}(Q_1) \land \mathcal{L}(P_2) = \mathcal{L}(Q_2)
-    \Rightarrow \mathcal{L}(P_1 \cup P_2) = \mathcal{L}(Q_1 \cup Q_2)$
-\end{corollary}
+A Deterministic Finite Automaton $D$ is special in that $\delta_M$ assigns to
+every state and input symbol exactly one successor state.
+Also, there is exactly one initial state.
 
-After proving that this function is compatible a
-\textit{bisimulation up to congruence} can be computed for determinised NFAs.
+It is important to notice that the cardinality of the set of states of a
+determinised NFA is $\mathcal{O}(2^{|Q|})$.
+This can quickly become a big problem if algorithms and representations of
+automata are not chosen properly, as the following subsection will show.
+
+
+\subsection{Deterministic Finite Automata}
+
+Every NFA $N$ can be converted into the DFA
+$N^\# = \langle \mathcal{P}(Q_N), \Sigma_N, \{ S_N \}, F_{N^\#}, \delta_{N^\#} \rangle$:
+`'
+\begin{definition}
+  \begin{align*}
+    F_{N^\#} &= \{ P \in \mathcal{P}(Q) \forWhich P \cap F \neq \emptyset \}\\
+    \delta_{N^\#}(P, a) &= \bigcup_{p \in P} \delta_N(p, a)
+  \end{align*}
+\end{definition}
+
+\subsection{Minimization and equivalence of finite automata}
+
+Within the above framework it is easy to define automata which have inaccessible
+states, that is, there is no input word which can reach one of those states.
+Also, it is possible to introduce redundancies into an automata.
+
+\begin{example}
+  These two automata accept exactly the same language:\\
+  \center
+  \begin{tikzpicture}[shorten >=1pt,node distance=3cm,on grid,auto]
+    \node[state,initial,accepting] (p) [] {$p$};
+    \node[state,initial,accepting] (q_0) [right=of p] {$q_0$};
+    \node[state,accepting] (q_1) [right=of q_0] {$q_1$};
+    \path[->]
+      (p) edge [loop above] node {a} ()
+      (q_0) edge [bend left] node {a} (q_1)
+      (q_1) edge [bend left] node {a} (q_0);
+  \end{tikzpicture}
+\end{example}
+
+Since many useful applications of automata use PSPACE-complete algorithms it
+is desireable to minimize the number of states of an automaton.
+For DFAs this is a well-researched topic, and there are efficient algorithms.
+It is not so easy for NFAs however: the simplest approach would be to
+determinise the automaton and then use a minimization algorithm.
+This is PSPACE-complete though because of the determinisation.
+
+We get similar results for determining equivalence of NFAs and DFAs:
+Hopcroft and Karp developed an (almost) linear algorithm for the deterministic
+case which runs in $\mathcal{O}(n \times \alpha(n))$ thanks to a
+Union-Find data structure\footnote{$\alpha$ is the inverse of Ackermann's
+function, which grows extremely slowly.}.
+However, for the NFA case we are stuck with PSPACE-completeness, for the same
+reason as in the minimization case.
+
+In both cases research focuses on looking for algorithms whose
+(runtime or memory) complexity is exponential only in the worst case.

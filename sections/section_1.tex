@@ -2,25 +2,23 @@
 
 Finite automata are a basic tool of computer science, and among their
 applications are lexical analyzers, software engineering, model checking,
-string matching algorithms and others. Though many of these areas use more powerful
-constructions (for example, regular expression engines usually also implement
-backreferences and other extensions), the properties of their foundations and
-their analysis is still important.
+string matching algorithms and others.
+Though many of these areas use more powerful constructions
+(for example, regular expression engines usually also implement backreferences
+and other extensions),
+the properties of their foundations and their analysis is still important.
 
 An important question about two finite automata is whether they are equivalent,
-that is, whether they accept the same language. It is not obvious how to do
-this efficiently since it is a PSPACE-problem for nondeterminstic automata.
+that is, whether they accept the same language.
+It is not obvious how to do this efficiently since it is a PSPACE-problem for nondeterminstic automata.
 In their work, Bonchi and Pous developed a coinductive framework for analyzing
 and solving this problem, and showed that older algorithms and some related ones can
-be presented using this framework. Also, with this background they developed
-improvements which significantly improve on previous
-algorithms\cite{doyen2010antichain}\cite{abdulla2010simulation}, according to
+be presented using this framework.
+Also, with this background they developed improvements which significantly improve on previous
+algorithms~\cite{abdulla2010simulation,doyen2010antichain}, according to
 their experimental evaluation.
 
 This thesis first reviews some definitions of the underlying theories, then
-it will present the contributions of Bonchi and Pous. Then the results
-of their experiments will be presented and interpreted, and finally future research
-directions are outlined.
-
-Notaional conventions: sometimes a binary relation $R$ is used as a binary
-operator, i.e., the proposition $p \setAsRelation{R} q$ is equivalent to $(p, q) \in R$.
+it will present the contributions of Bonchi and Pous.
+Then the results of their experiments will be presented and interpreted,
+and finally future research directions are outlined.

@@ -1,19 +1,12 @@
 MAIN_FILE=report
 OUTPUT_FILE_NAME="Efficiently Checking Equivalence of Nondeterministic Finite Automata.pdf"
 
-all: $(MAIN_FILE).bbl $(MAIN_FILE).aux
+all:
+	pdflatex $(MAIN_FILE).tex || exit 1
+	biber --debug $(MAIN_FILE) || exit 1
+	pdflatex $(MAIN_FILE).tex
 	pdflatex $(MAIN_FILE).tex
 	mv $(MAIN_FILE).pdf $(OUTPUT_FILE_NAME)
-
-fast: *.tex sections/*.tex
-	pdflatex $(MAIN_FILE).tex
-	mv $(MAIN_FILE).pdf $(OUTPUT_FILE_NAME)
-
-$(MAIN_FILE).aux: $(MAIN_FILE).tex
-	pdflatex $(MAIN_FILE).tex
-
-$(MAIN_FILE).bbl: $(MAIN_FILE).aux biblio.bib
-	biber $(MAIN_FILE)
 
 .PHONY: clean cleaner
 

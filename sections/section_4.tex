@@ -18,32 +18,31 @@ Bisimulations are relations on states of an automaton (or a similar transition
 system, such as actors). They are special in that they are
 congruent with the transition function of the automaton, i.e., if two states are
 related, then their successors also have to be related.
-It is defined as follows:
+For NFAs it is defined as follows:
 
 \begin{definition}
   A bisimulation $R_N$ is a binary relation on the set of states of
   the automaton $N$ satisfying the following properties:
   \begin{align*}
-    (p, q) \in R_N \iff &(p \in F_N \iff q \in F_N)\\
-      &\land \forall a \in \Sigma_N: \delta_N(p, a) \setAsRelation{R} \delta_N(q, a)
+    (P_1, P_2) \in R_N \iff &\text{acc}_N(P_1) \iff \text{acc}_N(P_2)\\
+      &\land \forall a \in \Sigma_N: \delta_N(P_1, a) \setAsRelation{R_N} \delta_N(P_2, a)
   \end{align*}
 
-  The notation $p \sim q$ is used to express that there exists a bisimulation
-  which relates {$p$ and $q$}.
+  The notation $P_1 \sim P_2$ is used to express that there exists a bisimulation
+  which relates {$P_1$ and $P_2$}.
 \end{definition}
 
-\begin{definition}
-  \begin{align*}
-    (p, q) \in R_N \iff &(p \in F_N \iff q \in F_N)\\
-      &\land \forall a \in \Sigma_N: \delta_N(p, a) \setAsRelation{R} \delta_N(q, a)
-  \end{align*}
-\end{definition}
+
 
 It is easy to see that any bisimulation progresses to itself.
 
 \begin{definition}
-  Two states of an automaton have the same language if there is a bisimulation relating them. \\
-  $\mathcal{L}_N(p) = \mathcal{L}_N(q) \iff p \sim q$
+  Two sets of states of an automaton accept the same language
+  if there is a bisimulation relating them.
+
+  \begin{align*}
+    \mathcal{L}_N(P_1) = \mathcal{L}_N(P_2) \iff P_1 \sim P_2
+  \end{align*}
 \end{definition}
 
 \subsection{Computing bisimulations}

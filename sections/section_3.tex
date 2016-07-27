@@ -46,17 +46,15 @@ Formally, this is what the function $\hat{\delta}_N$ does:
   \end{align*}
 \end{definition}
 
-% A finite automata accepts an input word if it is possible to reach one of the
-% accepting states by using all of the word's characters.
-% The set of words which an automaton accepts if starting from one of the states
-% in the set $P$ is called the language of $P$:
-%
-% \begin{definition}
-%   $\mathcal{L}(N) = \{ w \forWhich \exists s \in S_N: \hat{\delta}_N(s, w) \cap F_N \neq \emptyset \}$
-% \end{definition}
-%
-% For the purpose of this thesis it is interesting to start from an arbitrary set of states of the automaton.
+\begin{definition}
+  A set of states of the NFA $N$ is said to be \emph{accepting} if one of its
+  members is an accepting state.
+  This definition will be useful to simplify some formulas and algorithms.
 
+  \begin{align*}
+    \text{acc}_N(P) \iff P \cap F_N \neq \emptyset
+  \end{align*}
+\end{definition}
 
 \subsection{Deterministic Finite Automata}
 
@@ -83,17 +81,17 @@ Therefore, there is always only one possibility to transition to a successor
 state.
 
 \begin{definition}
-  Every NFA $N$ can be converted into the DFA
-  $N^\# = \langle \mathcal{P}(Q_N), \Sigma_N, \{ S_N \}, F_{N^\#}, \delta_{N^\#} \rangle$:
+  Every NFA $N$ can be converted into the DFA $N^\#$.
 
   \begin{align*}
+    N^\# &:= \langle \mathcal{P}(Q_N), \Sigma_N, \{ S_N \}, F_{N^\#}, \delta_{N^\#} \rangle\\
     F_{N^\#} &:= \{ P \in \mathcal{P}(Q) \forWhich P \cap F \neq \emptyset \}\\
     \delta_{N^\#}(P, a) &:= \bigcup_{p \in P} \delta_N(p, a)
   \end{align*}
 \end{definition}
 
-It is important to notice that the cardinality of the set of states of a
-determinised NFA is $\mathcal{O}(2^{|Q|})$.
+It is important to be aware that the cardinality of the set of states of the DFA
+$N^\#$ is $\mathcal{O}(2^{|Q_N|})$.
 This can quickly become a big problem if algorithms and representations of
 automata are not chosen properly, as the following subsection will show.
 

@@ -28,36 +28,34 @@ Formally, this is what the function $\hat{\delta}_N$ does:
 
 \begin{definition}
   \begin{align*}
-    \hat{\delta}_N(p, \epsilon) &= \{p\}\\
-    \hat{\delta}_N(p, aw) &= \bigcup_{q \in \delta_N(p, a)}\hat{\delta}_N(q, w)
+    \hat{\delta}_N(p, \epsilon) &:= \{p\}\\
+    \hat{\delta}_N(p, aw) &:= \bigcup_{q \in \delta_N(p, a)}\hat{\delta}_N(q, w)
   \end{align*}
 \end{definition}
 
-A finite automata accepts an input word if it is possible to reach one of the
-accepting states by using all of the word's characters.
-The set of words which an automaton accepts is called its language:
-
 \begin{definition}
-  $\mathcal{L}(N) = \{ w \forWhich \exists s \in S_N: \hat{\delta}_N(s, w) \cap F_N \neq \emptyset \}$
-\end{definition}
+  The language accepted by the set of states $P$ is the set of words which can
+  make the automaton reach a final state by starting from one of the members
+  of $P$.\\
+  The language accepted by an automaton is the language accepted by the set of
+  its starting states.
 
-For the purpose of this thesis it is interesting to start from an arbitrary set of states of the automaton.
-
-\begin{definition}
   \begin{align*}
-    \mathcal{L}_N(P) &= \{ w \forWhich \exists p \in P: \hat{\delta}_N(p, w) \cap F_N \neq \emptyset\}\\
-    \mathcal{L}(N) &= \mathcal{L}_N(S_N)
+    \mathcal{L}_N(P) &:= \{ w \forWhich \exists p \in P: \hat{\delta}_N(p, w) \cap F_N \neq \emptyset\}\\
+    \mathcal{L}(N) &:= \mathcal{L}_N(S_N)
   \end{align*}
 \end{definition}
 
-A Deterministic Finite Automaton $D$ is special in that $\delta_M$ assigns to
-every state and input symbol exactly one successor state.
-Also, there is exactly one initial state.
-
-It is important to notice that the cardinality of the set of states of a
-determinised NFA is $\mathcal{O}(2^{|Q|})$.
-This can quickly become a big problem if algorithms and representations of
-automata are not chosen properly, as the following subsection will show.
+% A finite automata accepts an input word if it is possible to reach one of the
+% accepting states by using all of the word's characters.
+% The set of words which an automaton accepts if starting from one of the states
+% in the set $P$ is called the language of $P$:
+%
+% \begin{definition}
+%   $\mathcal{L}(N) = \{ w \forWhich \exists s \in S_N: \hat{\delta}_N(s, w) \cap F_N \neq \emptyset \}$
+% \end{definition}
+%
+% For the purpose of this thesis it is interesting to start from an arbitrary set of states of the automaton.
 
 
 \subsection{Deterministic Finite Automata}
@@ -119,19 +117,21 @@ Also, it is possible to introduce redundancies into an automata.
   \end{tikzpicture}
 \end{example}
 
-Since many useful applications of automata use PSPACE-complete algorithms it
-is desireable to minimize the number of states of an automaton.
+Since many useful applications of automata involve solving PSPACE-complete
+decision problems, it is desirable to minimize the number of states of an
+automaton.
 For DFAs this is a well-researched topic, and there are efficient algorithms.
 It is not so easy for NFAs however: the simplest approach would be to
-determinise the automaton and then use a minimization algorithm.
-This is PSPACE-complete though because of the determinisation.
+minimize it after turning the automaton into a deterministic one, which in the
+worst case causes exponential (in the number of states of the NFA)
+runtime complexity.
 
 We get similar results for determining equivalence of NFAs and DFAs:
 Hopcroft and Karp developed an (almost) linear algorithm for the deterministic
 case which runs in $\mathcal{O}(n \times \alpha(n))$ thanks to a
-Union-Find data structure\footnote{$\alpha$ is the inverse of Ackermann's
-function, which grows extremely slowly.}.
-However, for the NFA case we are stuck with PSPACE-completeness, for the same
+Union-Find data structure.\footnote{$\alpha$ is the inverse of Ackermann's
+function, which grows extremely slowly.}
+However, for the NFA case we are stuck with exponential runtime, for the same
 reason as in the minimization case.
 
 In both cases research focuses on looking for algorithms whose

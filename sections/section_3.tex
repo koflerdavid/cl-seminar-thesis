@@ -62,15 +62,42 @@ automata are not chosen properly, as the following subsection will show.
 
 \subsection{Deterministic Finite Automata}
 
-Every NFA $N$ can be converted into the DFA
-$N^\# = \langle \mathcal{P}(Q_N), \Sigma_N, \{ S_N \}, F_{N^\#}, \delta_{N^\#} \rangle$:
-`'
 \begin{definition}
+  A \emph{Deterministic Finite Automaton} (DFA)
+  $D = \langle Q_D, \Sigma_D, S_D, F_D, \delta_N \rangle$
+  consists of five parts:
+
+  \begin{itemize}
+    \item a finite set of states $Q_D$,
+    \item a finite set of symbols $\Sigma_D$, called the input alphabet,
+    \item a starting state $S_D \in Q_D$,
+    \item a set of accepting states $F_D \subseteq Q_D$, and
+    \item a total transition function
+            $\delta_D : (Q_D \times \Sigma_D) \to Q_D$,
+             mapping a state and an input symbol to a successor state.
+  \end{itemize}
+
+\end{definition}
+
+The differences to a NFA are that there is only one starting state, and that
+the transition function produces only a single state.
+Therefore, there is always only one possibility to transition to a successor
+state.
+
+\begin{definition}
+  Every NFA $N$ can be converted into the DFA
+  $N^\# = \langle \mathcal{P}(Q_N), \Sigma_N, \{ S_N \}, F_{N^\#}, \delta_{N^\#} \rangle$:
+
   \begin{align*}
-    F_{N^\#} &= \{ P \in \mathcal{P}(Q) \forWhich P \cap F \neq \emptyset \}\\
-    \delta_{N^\#}(P, a) &= \bigcup_{p \in P} \delta_N(p, a)
+    F_{N^\#} &:= \{ P \in \mathcal{P}(Q) \forWhich P \cap F \neq \emptyset \}\\
+    \delta_{N^\#}(P, a) &:= \bigcup_{p \in P} \delta_N(p, a)
   \end{align*}
 \end{definition}
+
+It is important to notice that the cardinality of the set of states of a
+determinised NFA is $\mathcal{O}(2^{|Q|})$.
+This can quickly become a big problem if algorithms and representations of
+automata are not chosen properly, as the following subsection will show.
 
 \subsection{Minimization and equivalence of finite automata}
 
@@ -81,7 +108,7 @@ Also, it is possible to introduce redundancies into an automata.
 \begin{example}
   These two automata accept exactly the same language:\\
   \center
-  \begin{tikzpicture}[shorten >=1pt,node distance=3cm,on grid,auto]
+  \begin{tikzpicture}[shorten >=1pt,node distance=2.5cm,on grid,auto]
     \node[state,initial,accepting] (p) [] {$p$};
     \node[state,initial,accepting] (q_0) [right=of p] {$q_0$};
     \node[state,accepting] (q_1) [right=of q_0] {$q_1$};

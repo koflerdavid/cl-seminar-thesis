@@ -1,1 +1,68 @@
 \section{Experimental results}
+
+\subsection{Experiment setup}
+
+Bonchi and Pous conducted two experiments to compare Hopcroft and Karp's original
+algorithm (HK), their improved algorithm (HKC and HKC'),
+and the antichain algorithms (AC and AC').
+The first experiment measures the performance of checking language equivalence,
+while the second experiment is about language inclusion.
+
+HK, HKC, and HKC' were implemented by Bonchi and Pous in OCaml and was published
+online along with a web interface which visualizes the operation of all
+algorithms~\cite{hkntonline}.
+
+The antichain algorithms were represented by the VATA library,
+implemented in C++~\cite{lengal2012vata}.
+This was the most efficient implementation of these algorithms known to
+Bonchi and Pous at the time of the experiments.
+Though designed for tree automata, they can also be used to compare NFAs
+by representing them as unary tree automata.
+
+Language equivalence was checked for one thousand random automata with varying
+number of states.
+Bonchi and Pous took care to test the worst-case behaviour of the algorithms by
+not generating automata with accepting states.
+This ensures that there is no possible pair of accepting and non-accepting
+states, and thus any algorithm will be forced to analyze any relevant pair.
+Also, the automata are generated such that the expected number of
+state transitions per state and input alphabet symbol is $1.25$, which
+statistically maximizes the size of the corresponding minimized DFA, according
+to Tabakov and Vardi~\cite{Tabakov2005}.
+
+Language inclusion examples are taken from model checking of programs.
+They were initially used by Abdullah et al.\ in~\cite{abdulla2010simulation}
+to evaluate their improvements to the antichain algorithm.
+
+\subsection{Results}
+
+
+
+\subsection{Analysis}
+
+For the equivalence case it is quite clear that HKC outperforms both HK and AC
+by orders of magnitude.
+For the case of $n = 1000$ AC seems to be able to keep up with HKC, but
+there are also cases where AC runs out of memory, while HKC does not.
+The reason why is the large number of states that AC has to compare, and, thus,
+represent in memory.
+
+Since the similarity-enhanced algorithms AC' and HKC' require preprocessing time
+to compute the similarity relation, the time needed for this step has to be
+taken into account when comparing runtimes.
+The language inclusion experiment shows that in the inclusion case AC and HKC
+are outperformed by the similiarity-enhanced versions.
+In the counterexample cases the similarity-enhanced algorithms are slower,
+though there are cases when it pays off to use them.
+It is hard to interpret the results of the equivalence experiments because
+Bonchi and Pous did not include the time required to calculate the equality
+relation in the results.
+All in all it can be said that the similarity-enhanced versions of the
+algorithms perform better, but they depend on a precomputed similarity relation.
+
+Since VATA is written for tree automata, word automata have to be represented
+as working on terms composed of unary function symbols.
+This could have an impact on the processing time of the algorithms.
+To get a fairer comparison of the algorithms it would be useful to implement
+them in the same language and make them use the same libraries and data
+representations and then repeat the experiments.

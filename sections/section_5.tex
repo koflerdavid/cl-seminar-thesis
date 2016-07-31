@@ -6,14 +6,14 @@ Bonchi and Pous conducted two experiments to compare Hopcroft and Karp's origina
 algorithm (HK), their improved algorithm (HKC and HKC'),
 and the antichain algorithms (AC and AC').
 The first experiment measures the performance of checking language equivalence,
-while the second experiment is about language inclusion.
+while the second experiment is about checking language inclusion.
 
 HK, HKC, and HKC' were implemented by Bonchi and Pous in OCaml and was published
 online along with a web interface which visualizes the operation of all
 algorithms~\cite{hkntonline}.
 
-The antichain algorithms were represented by the VATA library,
-implemented in C++~\cite{lengal2012vata}.
+For evaluating the antichain algorithms the implementations contained in the
+VATA library were used~\cite{lengal2012vata}.
 This was the most efficient implementation of these algorithms known to
 Bonchi and Pous at the time of the experiments.
 Though designed for tree automata, they can also be used to compare NFAs
@@ -34,9 +34,7 @@ Language inclusion examples are taken from model checking of programs.
 They were initially used by Abdullah et al.\ in~\cite{abdulla2010simulation}
 to evaluate their improvements to the antichain algorithm.
 
-\subsection{Results}
-
-
+The results can be looked up in their paper~\cite{Bonchi:2013:CNE:2429069.2429124}.
 
 \subsection{Analysis}
 

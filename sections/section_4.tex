@@ -1,89 +1,233 @@
 \section{Bonchi and Pous' coinductive approach}
 
 The main contribution of Bonchi and Pous is their presentation of existing
-algorithms using coinductive frameworks. This makes it possible to use a more
-precise performance metric, that is, the number of pairs they have to check.
+  algorithms using coinductive frameworks.
+This makes it possible to use a more precise performance metric, that is,
+  the number of pairs they have to check.
 
 Bonchi and Pous use a proof method originating in concurrency theory called
-``bisimulation''. Most of the following theory originates from earlier work of
-Milner~\cite{milner1989communication} and Sangiorgi~\cite{sangiorgi1998bisimulation}.
+  ``bisimulation''. Most of the following theory originates from earlier work of
+  Milner~\cite{milner1989communication} and
+  Sangiorgi~\cite{sangiorgi1998bisimulation}.
+
+In the following the presence of an NFA $N$ is assumed, for which the language
+  equality of some states has to be proven.
 
 \subsection{Coinduction and Bisimulations}
 
 Coinductive frameworks originate from concurrency theory and allow reasoning
-about structures of which only their behaviour is known. The best-known
-coinductive proof principle is bisimulation.
+  about structures of which only their behaviour is known.
+  The best-known coinductive proof principle is bisimulation.
 
 Bisimulations are relations on states of an automaton (or a similar transition
-system, such as actors). They are special in that they are
-congruent with the transition function of the automaton, i.e., if two states are
-related, then their successors also have to be related.
+  system, such as actors).
+They are special in that they are congruent with the transition function of the
+  automaton, i.e., if two states are related,
+  then their successors also have to be related.
 For NFAs it is defined as follows:
 
 \begin{definition}
   A bisimulation $R_N$ is a binary relation on the set of states of
-  the automaton $N$ satisfying the following properties:
+    the automaton $N$ satisfying the following properties:
   \begin{align*}
-    (P_1, P_2) \in R_N \iff &\text{acc}_N(P_1) \iff \text{acc}_N(P_2)\\
+    (P_1, P_2) \in R_N \iff &(\text{acc}_N(P_1) \iff \text{acc}_N(P_2))\\
       &\land \forall a \in \Sigma_N: \delta_N(P_1, a) \setAsRelation{R_N} \delta_N(P_2, a)
   \end{align*}
 
   The notation $P_1 \sim P_2$ is used to express that there exists a bisimulation
-  which relates {$P_1$ and $P_2$}.
+    which relates {$P_1$ and $P_2$}.
 \end{definition}
 
+\subsection{Progression}
 
-
-It is easy to see that any bisimulation progresses to itself.
+For the following definitions and proof we need the notion of progression which
+  relates two relations on sets of states.
 
 \begin{definition}
+  A relation $R$ progresses to $R'$
+    ($R, R' \subseteq \mathit{P}(Q_N) \times \mathit{P}(Q_N)$)
+    if $P_1 \setAsRelation{R} P_2 \to$
+  \begin{align*}
+    \accepting{P} \iff \accepting{P}\\
+    \land \forall a \in \Sigma_N: \delta_N(P, a) \setAsRelation{R'} \delta_N(P', a)
+  \end{align*}
+\end{definition}
+
+It directly follows from its definition that any bisimulation progresses to itself.
+
+\begin{theorem}
   Two sets of states of an automaton accept the same language
-  if there is a bisimulation relating them.
+    if there is a bisimulation relating them.
 
   \begin{align*}
     \mathcal{L}_N(P_1) = \mathcal{L}_N(P_2) \iff P_1 \sim P_2
   \end{align*}
-\end{definition}
+\end{theorem}
+
+To prove this statement we need two auxiliary lemmas.
+
+The first lemma is useful to prove equality of two sets defined in the
+  intensional way, that is, by specifying that elements are members iff they
+  fulfil a certain property.
+It is useful for converting to and getting rid of set notation.
+
+\begin{lemma}
+  \begin{align*}
+    \{ a \in M \forWhich p_1(a) \} = \{ a \in M \forWhich p_2(a)\} \iff (\forall a \in M: p_1(a) \iff p_2(a))
+  \end{align*}
+\end{lemma}
+
+\begin{proof}
+  We make use of the property that any two sets $A$ and $B$ are equal if
+    $A \subseteq B$ and $B \subseteq A$.
+  Certainly for all pair of intensionally defined sets
+    $S_1 = \{a \in M \forWhich p_1(a)\}$ and
+    $S_2 = \{a \in M \forWhich p_2(a)\}$ it is true that
+    $S_1 \subseteq S_2 \iff p_1 \Rightarrow p_2$.
+  If we combine these two statements then we get
+  \begin{align*}
+         &S_1 = S_2\\
+    \iff &S_1 \subseteq S_2 \land S_2 \subseteq S_1\\
+    \iff &p_1 \Rightarrow p_2 \land p_2 \Rightarrow p_1\\
+    \iff &(p_1 \iff p_2)
+  \end{align*}
+\end{proof}
+
+The second lemma makes it easier to reason about language concatenation.
+
+\begin{lemma}
+  \begin{align*}
+    \forall R_1, R_2 &\subseteq \mathcal{P}(Q_N), \forall v \in \Sigma_N^*:\\
+      &\lang(R_1) = \lang(R_2) \Rightarrow
+        \lang(\hat{\delta}_N(R_1, v)) = \lang(\hat{\delta}_N(R_2, v))
+  \end{align*}
+\end{lemma}
+
+\begin{proof}
+  We use induction on the length of $v$ to prove the above statement.
+
+  $v = \epsilon$:
+    $\lang(\hat{\delta}_N(R_1, \epsilon))
+      = \lang(R_1)
+      = \lang(R_2)
+      = \lang(\hat{\delta}_N(R_2, \epsilon))$
+
+  $v = w \cdot a$:
+    It follows from basic Kleene algebra axioms that
+      for all languages $L_1$ and $L_2$ and symbols $a$,
+      $L_1 = L_2 \Rightarrow L_1 \cdot a = L_2 \cdot a$.
+    Using the induction hypothesis and the definition of the language of NFAs
+      we get the lemma
+    \begin{align*}\lang(P_1) &= \lang(P_2) \Rightarrow\\
+      &\forall a \in \Sigma_N, w \in \Sigma_N^\ast:
+        \accepting{\delta_N(\hat{\delta}_N(R_1, w), a)}
+          \iff \accepting{\delta_N(\hat{\delta}_N(R_2, w), a)}.
+    \end{align*}
+    Using the alternative definition of $\hat{\delta}_N$ we get
+      $\lang(\hat{\delta}_N(R_1, wa)) = \lang(\hat{\delta}_N(R_2, wa)$.
+\end{proof}
+
+Now we are ready for the main proof.
+
+\begin{proof}
+  To prove that two sets of states of the NFA $N$ have the same language
+    iff they are related by a bisimulation we have to prove two directions:
+  \begin{enumerate}
+    \item[``$\Rightarrow$'']:
+      It has to be proven that
+        $\lang(P_1) = \lang(P_2) \Rightarrow P_1 \sim P_2$.
+        Basically we have to prove that all pair of language-equal sets of
+          states are related by a bisimulation.
+      \begin{enumerate}
+        \item $\accepting{P_1} \iff \accepting{P_2}$:
+          This statement will be proven by contradiction.
+          There are two cases two analyse, the first being
+            $\accepting{P_1} \land \lnot \accepting{P_2}$.
+          Since
+            $\hat{\delta}_N(P_1, \epsilon) = P_1$ (therefore $\epsilon \in \lang(P_1)$) and
+            $\hat{\delta}_N(P_2, \epsilon) = P_2$ (therefore $\epsilon \notin \lang(P_2)$),
+            the languages $\lang(P_1)$ and $\lang(P_2)$ differ, which contradicts with
+            our initial assumption that they are equal.
+          Since the other case is symmetrical, we obtain a contradiction,
+            which concludes this point.
+        \item $\forall a \in \Sigma_N: \delta_N(P_1, a) \setAsRelation{R} \delta_N(P_2, a)$:
+          Applying the definition of $R$ we get
+            $\forall a \in \Sigma_N: \lang(\delta(P_1, a)) = \lang(\delta(P_2, a))$.
+          This is equivalent to
+            $\forall a \in \Sigma_N: \lang(\hat{\delta}_N(P_1, a)) = \lang(\hat{\delta}_N(P_2, a))$,
+            which is an instance of the lemma proven above.
+      \end{enumerate}
+    \item[``$\Leftarrow$'']:
+      Now it has to be proven that all pairs of sets of states related by a
+        bisimulation accept the same language, that is
+        $P_1 \sim P_2 \Rightarrow \lang(P_1) = \lang(P_2)$,
+        which is equivalent to
+        $\forall w \in \Sigma_N^\ast:
+          \accepting{\hat{\delta}_N(P_1, w)} \iff \accepting{\hat{\delta}_N(P_2, w)}$.
+      To do so, induction on the length of $w$ is used.
+      \begin{enumerate}
+        \item $w = \epsilon$: From the definition of bisimulation it is known
+            that $\accepting{P_1} \iff \accepting{P_2}$.
+          This is equivalent to
+            $\accepting{\hat{\delta}_N(P_1, \epsilon)}
+              \iff \accepting{\hat{\delta}_N(P_2, \epsilon))}$
+            and concludes this point.
+        \item $w = a \cdot v$:
+          We make use of the induction hypothesis and bisimulation properties
+          to get
+            $\accepting{\hat{\delta}_N(\delta_N(P_1, a), v)}
+              \iff \accepting{\hat{\delta}_N(\delta_N(P_2, a), v)}$
+              (we move backwards through the string).
+          This can be transformed to
+            $\accepting{\hat{\delta}_N(P_1, a \cdot v)}
+              \iff \accepting{\hat{\delta}_N(P_2, a \cdot v)}$,
+            concluding also this case.
+      \end{enumerate}
+\end{enumerate}
+\end{proof}
 
 \subsection{Computing bisimulations}
 
-Bisimulations on states of a deterministic automaton can be computed using the following algorithm.
-To use it to compare two distinct automata, the automata have to be merged.
+Bisimulations on states of a deterministic automaton can be computed using the
+  following algorithm.
+In order to use it to compare two distinct automata, the automata have to be merged.
 It is necessary to ensure that their alphabets are the same (easily satisfied by
-using the union of the two alphabets), that their state sets are disjunct
-(by renaming), and that each of the input automata has only one starting state.
+  using the union of the two alphabets), that their state sets are disjunct
+  (by renaming), and that each of the input automata has only one starting state.
 
 \input{sections/algorithm}
 
-The algorithm first computes a bisimulation. If it succeeds then the languages are
-equal. If it fails to do so, the languages are not equal.
+The algorithm first computes a bisimulation.
+If it succeeds then the languages are equal.
+If it fails to do so, the languages are not equal.
 Finding a bisimulation, and therefore proving the language equivalence, yields
-the worst-case runtime of the algorithm.
+  the worst-case runtime of the algorithm.
 
-The algorithm can be extended to also find a witness for the inequality of the
-input states. This can be done by tagging each pair in \textit{todo} with the
-symbol sequence which yielded it. This results in the following algorithm,
-which yields either \textbf{true} or a word $w$ for which
-$\neg (\hat{\delta}(p, w) \in F \iff \hat{\delta}(q, w) \in F)$.
-
-\input{sections/algorithm_with_witness}
+%The algorithm can be extended to also find a witness for the inequality of the
+%input states. This can be done by tagging each pair in \textit{todo} with the
+%symbol sequence which yielded it. This results in the following algorithm,
+%which yields either \textbf{true} or a word $w$ for which
+%$\neg (\hat{\delta}(p, w) \in F \iff \hat{\delta}(q, w) \in F)$.
+%
+%\input{sections/algorithm_with_witness}
 
 \subsection{Bisimulations up-to}
 
 Since in the worst case there are $\mathcal{O}(n^2)$ pairs of states of the
-input automaton, it is advantageous to think about how to reduce the number of
-pairs we have to compute.
+  input automaton, it is advantageous to think about how to reduce the number of
+  pairs we have to compute.
 
 \begin{definition}
 A relation R is a bisimulation up-to $f$
 ($f : \mathcal{P}(Q \times Q) \to \mathcal{P}(Q \times Q$)) iff $R \rightarrowtail f(R)$.
 \end{definition}
 
-Sangiorgi introduced the notion of \textit{respectful} functions to describe
-function which yield bisimulations up-to.
-In an earlier work of Pous he introduced compatibility as a generalisation of
-Sangiorgi's respectfulness~\cite{pous2007complete}, but in the context of Bonchi and Pous's paper they
-are equivalent. Nevertheless, Bonchi and Pous are using this name in their work.
+Sangiorgi introduced the notion of \emph{respectful} functions to describe
+  function which yield bisimulations up-to.
+In an earlier work of Pous he introduced \emph{compatibility} as a generalisation of
+  Sangiorgi's respectfulness~\cite{pous2007complete}, but in the context of Bonchi and Pous's paper they
+  are equivalent.
+Nevertheless, Bonchi and Pous are using this name in their work.
 
 \begin{definition}
   A function $f : \mathcal{P}(Q \times Q) \to \mathcal{P}(Q \times Q)$ is compatible if it is
@@ -94,13 +238,17 @@ are equivalent. Nevertheless, Bonchi and Pous are using this name in their work.
   \end{itemize}
 \end{definition}
 
-A bisimulation $R$ up-to $f$ is a relation where $f(R)$ is a bisimulation.
-The function $f$ has to be \textit{compatible}. Bonchi and Pous proved that
-any bisimulation up-to is contained in a bisimulation. This is what their
-work is about: making it possible to more easily compute bisimulations.
+A relation $R$ is a \emph{bisimulation up-to} $f$ iff $f(R)$ is a bisimulation.
+The function $f$ has to be compatible. Bonchi and Pous proved that
+  any bisimulation up-to is contained in a bisimulation.
+This is what their work is about:
+  making it possible to more easily compute bisimulations.
+This is because bisimulations up-to are often smaller than full bisimulations
+  because $f$ is mototone.
 
-A main contribution of Bonchi and Pous is also to show that many nontrivial functions
-are compatible. The most important of them are
+A main contribution of Bonchi and Pous is also to show that many nontrivial
+  and useful functions are compatible.
+The most important of them are
 
 \begin{itemize}
   \item the identity function
@@ -114,11 +262,23 @@ are compatible. The most important of them are
   \item by the above four points, the equivalence closure
 \end{itemize}
 
+\begin{example}
+  We show that the identity function is compatible.
+  It is obvious that the identity function is monotone.
+  To show progression it is sufficient to insert the identity function into the
+    statement.
+  We get
+    $\forall R, R' \subseteq Q \times Q: R \rightarrowtail R'
+      \Rightarrow R \rightarrowtail R'$,
+  which is trivially true.
+\end{example}
+
+
 \subsection{Examples}
 
-Hopcroft and Karp's algorithm for determining the equivalence of DFAs is
-equivalent to computing a bisimulation up to equivalence, that is, exploiting
-symmetry and transitivity.
+Hopcroft and Karp's algorithm (HK) for determining the equivalence of DFAs is
+  equivalent to computing a bisimulation up to equivalence, that is, exploiting
+  symmetry and transitivity.
 
 Bonchi and Pous exploit the following property of the states of determinised NFAs:
 
@@ -129,4 +289,21 @@ Bonchi and Pous exploit the following property of the states of determinised NFA
 \end{corollary}
 
 After proving that this function is compatible a
-\textit{bisimulation up to congruence} can be computed for determinised NFAs.
+  \emph{bisimulation up to congruence} can be computed for determinised NFAs.
+The \emph{congruence closure} function combines the equational closure with
+  the inference rule specified by the above corollary.
+
+A general problem which occurs when we extend HK to determinised NFAs is the
+size of the necessary union-find structure.
+Since the states are the powerset of the underlying NFA, the data structure
+will have to store too many states.
+Using the congruence closure only aggravates the problem.
+
+Bonchi and Pous instead define a notion of \emph{set rewriting}.
+This allows replacing subsets of sets according to approproate rewrite rules.
+Bonchi and Pous also proved confluence for the rewrite rules generated by
+the congruence closure.
+To exploit this for their data structure, they simply store the normal forms of
+the pairs contained in them.
+When membership of a pair is requested, the normal forms are computed and
+looked up.

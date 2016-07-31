@@ -33,6 +33,10 @@ Formally, this is what the function $\hat{\delta}_N$ does:
   \end{align*}
 \end{definition}
 
+$\hat{\delta}_N$ can also be defined the other way around, that is, by
+  pattern matching on characters at the end of the input word instead at the front.
+This is a very basic result of automata theory.
+
 \begin{definition}
   The language accepted by the set of states $P$ is the set of words which can
   make the automaton reach a final state by starting from one of the members
@@ -52,7 +56,7 @@ Formally, this is what the function $\hat{\delta}_N$ does:
   This definition will be useful to simplify some formulas and algorithms.
 
   \begin{align*}
-    \text{acc}_N(P) \iff P \cap F_N \neq \emptyset
+    \accepting{P} \iff P \cap F_N \neq \emptyset
   \end{align*}
 \end{definition}
 

@@ -1,5 +1,4 @@
 \documentclass{clseminar}
-%\documentclass{article}
 \usepackage[backend=biber,style=trad-abbrv]{biblatex}
 \usepackage{csquotes}
 \usepackage{pgffor}
@@ -9,14 +8,16 @@
 
 \newcommand\forWhich{\text{ }\vert\text{ }}
 \newcommand\setAsRelation[1]{\text{ }{#1}\text{ }}
+\newcommand\accepting[1]{\text{acc}_{N}({#1})}
+\newcommand\lang{\mathcal{L}_N}
 
 \begin{document}
 % BEGIN: titlepage setup ---------------------------------------------
 \title{Efficiently Checking Equivalence of Nondeterministic Finite Automata}
-%\mailaddress{D.Kofler@student.uibk.ac.at}
+\mailaddress{D.Kofler@student.uibk.ac.at}
 \author{David Kofler}
 \date{\today}
-%\supervisor{Dr.~Bertram Felgenhauer\and Univ.-Prof. Dr. Aart Middeldorp}
+\supervisors{Dr.~Bertram Felgenhauer\and Univ.-Prof. Dr. Aart Middeldorp}
 
 \abstract{\input{abstract}}
 % END: titlepage setup -----------------------------------------------
